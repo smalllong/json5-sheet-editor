@@ -1,0 +1,61 @@
+body {
+  margin: 0;
+}
+
+.root {
+  height: 100vh;
+  overflow: auto;
+}
+
+.toolbar {
+  position: sticky;
+  top: 0;
+  left: 0;
+  padding: 8px;
+  background-image: linear-gradient(#fff, transparent);
+  z-index: 10;
+}
+.toolbar > * {
+  vertical-align: middle;
+}
+
+table {
+  border-spacing: 0;
+  margin: 8px;
+}
+
+td {
+  border: 1px solid #ddd;
+  min-width: 80px;
+  height: 1em;
+  line-height: 1;
+  position: relative;
+  outline: none;
+}
+td.header-left {
+  background-color: #eee;
+  min-width: 20px;
+  text-align: center;
+}
+td.header-top {
+  background-color: #eee;
+  text-align: center;
+}
+
+td:focus,
+td.selected {
+  background-color: #dfd;
+}
+
+td.selected-top {
+  border-top: 1px solid green;
+}
+td.selected-left {
+  border-left: 1px solid green;
+}
+td.selected-right {
+  border-right: 1px solid green;
+}
+td.selected-bottom {
+  border-bottom: 1px solid green;
+}
