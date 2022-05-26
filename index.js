@@ -1,6 +1,7 @@
 var L = Lightue,
   selecting = false,
-  selectStart
+  selectStart,
+  resolveColor
 
 function toolButton(content, onclick) {
   return L.button({
@@ -159,7 +160,12 @@ var mergeManager = {
         this.include(result, this.table[i][result[1] + result[3] - 1])
       }
     }
-    return { top: result[0], left: result[1], height: result[2], width: result[3] }
+    return {
+      top: result[0],
+      left: result[1],
+      height: result[2],
+      width: result[3],
+    }
   },
   loopArea: function (top, left, height, width, tableState, tableClone, callback) {
     if (typeof tableState == 'function') {
@@ -237,6 +243,7 @@ var S = L.useState({
     bc: '#ffffff',
     fc: '#000000',
   },
+  colorPickerVisible: false,
 })
 
 function endSelect() {
@@ -254,11 +261,30 @@ function handleSelect(e, end) {
   } else if (selecting) endSelect()
 }
 
+function chooseColor(input, key) {
+  S.colorPickerVisible = true
+  resolveColor = (c) => {
+    S.colorPickerVisible = false
+    c = c == 'transparent' ? '' : c
+    mergeManager.loopArea(
+      S.selected.top,
+      S.selected.left,
+      S.selected.height,
+      S.selected.width,
+      function (row, col, mcol) {
+        if (this.isGoastCell(this.table[row][col])) return
+        setCell(S.table[row], mcol, key, c)
+      }
+    )
+    input.value = c
+  }
+}
+
 var vm = L({
   toolbar: {
     open: L.input({
       _type: 'file',
-      _accept: '.json5,text/json5,.json,text/json',
+      _accept: '.json5,text/json5,.json,text/json,application/json',
       onchange: function (e) {
         openFile(this.files[0])
       },
@@ -277,38 +303,44 @@ var vm = L({
       S.table.forEach((row) => row.push(''))
       S.table.forEach((row) => row.push(''))
     }),
-    bgColor: L.input({
-      _type: 'color',
-      $value: () => S.curColors.bc,
-      onchange: function (e) {
-        mergeManager.loopArea(
-          S.selected.top,
-          S.selected.left,
-          S.selected.height,
-          S.selected.width,
-          function (row, col, mcol) {
-            if (this.isGoastCell(this.table[row][col])) return
-            setCell(S.table[row], mcol, 'bc', e.target.value)
-          }
-        )
-      },
-    }),
-    color: L.input({
-      _type: 'color',
-      $value: () => S.curColors.fc,
-      onchange: function (e) {
-        mergeManager.loopArea(
-          S.selected.top,
-          S.selected.left,
-          S.selected.height,
-          S.selected.width,
-          function (row, col, mcol) {
-            if (this.isGoastCell(this.table[row][col])) return
-            setCell(S.table[row], mcol, 'fc', e.target.value)
-          }
-        )
-      },
-    }),
+    $_bgColor: {
+      $$: L.input({
+        _type: 'color',
+        $value: () => S.curColors.bc,
+        onchange: function (e) {
+          mergeManager.loopArea(
+            S.selected.top,
+            S.selected.left,
+            S.selected.height,
+            S.selected.width,
+            function (row, col, mcol) {
+              if (this.isGoastCell(this.table[row][col])) return
+              setCell(S.table[row], mcol, 'bc', e.target.value)
+            }
+          )
+        },
+      }),
+      choices: toolButton('▼', (e) => chooseColor(e.target.previousElementSibling, 'bc')),
+    },
+    $_color: {
+      $$: L.input({
+        _type: 'color',
+        $value: () => S.curColors.fc,
+        onchange: function (e) {
+          mergeManager.loopArea(
+            S.selected.top,
+            S.selected.left,
+            S.selected.height,
+            S.selected.width,
+            function (row, col, mcol) {
+              if (this.isGoastCell(this.table[row][col])) return
+              setCell(S.table[row], mcol, 'fc', e.target.value)
+            }
+          )
+        },
+      }),
+      choices: toolButton('▼', (e) => chooseColor(e.target.previousElementSibling, 'fc')),
+    },
     combine: toolButton('合并', function (e) {
       mergeManager.addMerge(S.selected.top, S.selected.left, S.selected.height, S.selected.width, S.table)
     }),
@@ -393,5 +425,25 @@ var vm = L({
   ondrop: (e) => {
     e.preventDefault()
     openFile(e.dataTransfer.files[0])
+  },
+  colorPicker: {
+    $class: { hidden: () => !S.colorPickerVisible },
+    close: toolButton('x', () => (S.colorPickerVisible = false)),
+    colors: [
+      ['#ffaaaa', '#ffffaa', '#aaffaa', '#aaffff', '#aaaaff', '#ffffff'],
+      ['#ff5555', '#ffff55', '#55ff55', '#55ffff', '#5555ff', '#cccccc'],
+      ['#ff0000', '#ffff00', '#00ff00', '#00ffff', '#0000ff', '#999999'],
+      ['#aa0000', '#aaaa00', '#00aa00', '#00aaaa', '#0000aa', '#666666'],
+      ['#550000', '#555500', '#005500', '#005555', '#000055', '#333333'],
+      ['#220000', '#222200', '#002200', '#002222', '#000022', '#000000', 'transparent'],
+    ].map((row) => ({
+      $$: row.map((cell) => ({
+        _style: 'background-color:' + cell,
+        onclick: (e) => {
+          S.colorPickerVisible = false
+          resolveColor(cell)
+        },
+      })),
+    })),
   },
 })

@@ -2,6 +2,10 @@ body {
   margin: 0;
 }
 
+.hidden {
+  display: none !important;
+}
+
 .root {
   height: 100vh;
   overflow: auto;
@@ -58,4 +62,33 @@ td.selected-right {
 }
 td.selected-bottom {
   border-bottom: 1px solid green;
+}
+
+.color-picker {
+  background-color: rgba(0,0,0,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+}
+.color-picker .close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  padding: 12px 20px;
+  font-size: 20px;
+}
+.color-picker .colors-item {
+  display: flex;
+}
+.color-picker .colors-item>div {
+  width: 30px;
+  height: 30px;
+  margin: 4px;
+  box-shadow: 0 0 8px #888;
 }
