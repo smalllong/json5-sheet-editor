@@ -1,7 +1,8 @@
 var L = Lightue,
   selecting = false,
   selectStart,
-  resolveColor
+  resolveColor,
+  fileName = ''
 
 function toolButton(content, onclick) {
   return L.button({
@@ -52,7 +53,7 @@ function setCell(row, i, key, value) {
 
 function download(format) {
   var link = document.createElement('a')
-  link.download = 'table.' + format
+  link.download = (fileName || 'table') + '.' + format
   link.type = 'text/' + format
   link.href = URL.createObjectURL(new Blob([(format == 'json' ? JSON : JSON5).stringify(clean(S.table))]))
   link.click()
@@ -67,6 +68,7 @@ function openFile(file) {
       result = parser.parse(fr.result)
     mergeManager.load(result)
     S.table = result
+    fileName = name.split('.')[0]
   }
 }
 
@@ -276,7 +278,7 @@ function chooseColor(input, key) {
         setCell(S.table[row], mcol, key, c)
       }
     )
-    input.value = c
+    input.value = c || '#ffffff'
   }
 }
 
@@ -284,7 +286,7 @@ var vm = L({
   toolbar: {
     open: L.input({
       _type: 'file',
-      _accept: '.json5,text/json5,.json,text/json,application/json',
+      _accept: '.json5,text/json5,.json,text/json,application/json5,application/json',
       onchange: function (e) {
         openFile(this.files[0])
       },

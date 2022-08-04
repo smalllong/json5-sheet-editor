@@ -16,11 +16,14 @@ body {
   top: 0;
   left: 0;
   padding: 8px;
-  background-image: linear-gradient(#fff, transparent);
+  background-image: linear-gradient(#fff, rgba(255, 255, 255, 0.4));
   z-index: 10;
 }
 .toolbar > * {
   vertical-align: middle;
+}
+.toolbar > .open {
+  width: 160px;
 }
 
 table {
@@ -28,6 +31,11 @@ table {
   margin: 8px;
 }
 
+tr.header {
+  position: sticky;
+  top: 43px;
+  z-index: 5;
+}
 td {
   border: 1px solid #ddd;
   min-width: 80px;
@@ -37,6 +45,9 @@ td {
   outline: none;
 }
 td.header-left {
+  position: sticky;
+  left: 0;
+  z-index: 5;
   background-color: #eee;
   min-width: 20px;
   text-align: center;
