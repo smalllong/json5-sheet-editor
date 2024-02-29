@@ -286,7 +286,7 @@ var vm = L({
   toolbar: {
     open: L.input({
       _type: 'file',
-      _accept: '.json5,text/json5,.json,text/json,application/json5,application/json',
+      _accept: '.json5,application/json5,.json,application/json',
       onchange: function (e) {
         openFile(this.files[0])
       },
