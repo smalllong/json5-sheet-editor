@@ -286,7 +286,7 @@ var vm = L({
   toolbar: {
     open: L.input({
       _type: 'file',
-      _accept: navigator.platform === 'iPhone' ? null : '.json5,application/json5,.json,application/json',
+      _accept: navigator.platform.startsWith('iP') ? null : '.json5,application/json5,.json,application/json',
       onchange: function (e) {
         openFile(this.files[0])
       },
