@@ -246,6 +246,7 @@ var S = L.useState({
     fc: '#000000',
   },
   colorPickerVisible: false,
+  debug: '',
 })
 
 function endSelect() {
@@ -406,6 +407,18 @@ var vm = L({
     },
     onmousemove: (e) => handleSelect(e),
     onmouseup: (e) => handleSelect(e, true),
+    ontouchstart: e => {
+      if (e.touches.length == 1) {
+        e.preventDefault()
+        selecting = true
+        selectStart = e.target.dataset.visualPos.split(',').map(Number)
+        handleSelect(e)
+        e.target.focus()
+      } else {
+        handleSelect(e, true)
+      }
+    },
+    ontouchend: (e) => handleSelect(e, true),
     onpaste: function (e) {
       var tmp = e.clipboardData.getData('text/html'),
         p = new DOMParser(),
@@ -428,6 +441,7 @@ var vm = L({
     e.preventDefault()
     openFile(e.dataTransfer.files[0])
   },
+  debug: S.$debug,
   colorPicker: {
     $class: { hidden: () => !S.colorPickerVisible },
     close: toolButton('x', () => (S.colorPickerVisible = false)),
